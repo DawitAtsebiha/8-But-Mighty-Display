@@ -62,7 +62,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>480</long>
+          <long>720</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -80,7 +80,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>11</long>
+          <long>5</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -98,7 +98,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>5</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -116,7 +116,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>33</long>
+          <long>21</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -133,6 +133,10 @@
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+        <entry>
           <string>intFormat</string>
           <intFormat>dec</intFormat>
         </entry>
@@ -144,7 +148,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>640</long>
+          <long>1280</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -162,7 +166,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>16</long>
+          <long>110</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -180,7 +184,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>96</long>
+          <long>40</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -198,7 +202,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>48</long>
+          <long>220</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -214,6 +218,10 @@
     <visualElement>
       <elementName>Const</elementName>
       <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
         <entry>
           <string>intFormat</string>
           <intFormat>dec</intFormat>
@@ -328,7 +336,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>640</long>
+          <long>1280</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -346,7 +354,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>480</long>
+          <long>720</long>
         </entry>
         <entry>
           <string>Bits</string>

@@ -233,11 +233,11 @@ module vga_sync (
   vga_timing vga_timing_i0 (
     .enable( 1'b1 ),
     .clock( clock ),
-    .resolution( 16'b1010000000 ),
-    .front_porch( 16'b10000 ),
-    .sync( 16'b1100000 ),
-    .back_porch( 16'b110000 ),
-    .negative( 1'b1 ),
+    .resolution( 16'b10100000000 ),
+    .front_porch( 16'b1101110 ),
+    .sync( 16'b101000 ),
+    .back_porch( 16'b11011100 ),
+    .negative( 1'b0 ),
     .V( X_temp ),
     .pulse( Horizontal ),
     .next( s0 )
@@ -246,11 +246,11 @@ module vga_sync (
   vga_timing vga_timing_i1 (
     .enable( s0 ),
     .clock( clock ),
-    .resolution( 16'b111100000 ),
-    .front_porch( 16'b1011 ),
-    .sync( 16'b10 ),
-    .back_porch( 16'b100001 ),
-    .negative( 1'b1 ),
+    .resolution( 16'b1011010000 ),
+    .front_porch( 16'b101 ),
+    .sync( 16'b101 ),
+    .back_porch( 16'b10101 ),
+    .negative( 1'b0 ),
     .V( Y_temp ),
     .pulse( Vertical )
   );
@@ -259,7 +259,7 @@ module vga_sync (
   )
   CompUnsigned_i2 (
     .a( X_temp ),
-    .b( 16'b1010000000 ),
+    .b( 16'b10100000000 ),
     .\< ( s1 )
   );
   CompUnsigned #(
@@ -267,7 +267,7 @@ module vga_sync (
   )
   CompUnsigned_i3 (
     .a( Y_temp ),
-    .b( 16'b111100000 ),
+    .b( 16'b1011010000 ),
     .\< ( s2 )
   );
   assign picture = (s1 & s2);
