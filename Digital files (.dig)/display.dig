@@ -47,11 +47,6 @@
       <pos x="340" y="220"/>
     </visualElement>
     <visualElement>
-      <elementName>vga_sync.dig</elementName>
-      <elementAttributes/>
-      <pos x="420" y="300"/>
-    </visualElement>
-    <visualElement>
       <elementName>Tunnel</elementName>
       <elementAttributes>
         <entry>
@@ -66,11 +61,6 @@
       <pos x="400" y="300"/>
     </visualElement>
     <visualElement>
-      <elementName>vga Char position.dig</elementName>
-      <elementAttributes/>
-      <pos x="680" y="380"/>
-    </visualElement>
-    <visualElement>
       <elementName>Tunnel</elementName>
       <elementAttributes>
         <entry>
@@ -83,11 +73,6 @@
         </entry>
       </elementAttributes>
       <pos x="1100" y="400"/>
-    </visualElement>
-    <visualElement>
-      <elementName>vga_text.dig</elementName>
-      <elementAttributes/>
-      <pos x="1120" y="300"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -174,11 +159,6 @@
         </entry>
       </elementAttributes>
       <pos x="740" y="960"/>
-    </visualElement>
-    <visualElement>
-      <elementName>VGA_words.dig</elementName>
-      <elementAttributes/>
-      <pos x="840" y="460"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -579,6 +559,26 @@
         </entry>
       </elementAttributes>
       <pos x="1140" y="540"/>
+    </visualElement>
+    <visualElement>
+      <elementName>character position.dig</elementName>
+      <elementAttributes/>
+      <pos x="680" y="380"/>
+    </visualElement>
+    <visualElement>
+      <elementName>strings.dig</elementName>
+      <elementAttributes/>
+      <pos x="840" y="460"/>
+    </visualElement>
+    <visualElement>
+      <elementName>sync.dig</elementName>
+      <elementAttributes/>
+      <pos x="420" y="300"/>
+    </visualElement>
+    <visualElement>
+      <elementName>text.dig</elementName>
+      <elementAttributes/>
+      <pos x="1120" y="300"/>
     </visualElement>
   </visualElements>
   <wires>
