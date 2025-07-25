@@ -233,11 +233,11 @@ module vga_sync (
   vga_timing vga_timing_i0 (
     .enable( 1'b1 ),
     .clock( clock ),
-    .resolution( 16'b1010000000 ),
-    .front_porch( 16'b10000 ),
-    .sync( 16'b1100000 ),
-    .back_porch( 16'b110000 ),
-    .negative( 1'b1 ),
+    .resolution( 16'b10100000000 ),
+    .front_porch( 16'b1101110 ),
+    .sync( 16'b101000 ),
+    .back_porch( 16'b11011100 ),
+    .negative( 1'b0 ),
     .V( X_temp ),
     .pulse( Horizontal ),
     .next( s0 )
@@ -246,11 +246,11 @@ module vga_sync (
   vga_timing vga_timing_i1 (
     .enable( s0 ),
     .clock( clock ),
-    .resolution( 16'b111100000 ),
-    .front_porch( 16'b1011 ),
-    .sync( 16'b10 ),
-    .back_porch( 16'b100001 ),
-    .negative( 1'b1 ),
+    .resolution( 16'b1011010000 ),
+    .front_porch( 16'b101 ),
+    .sync( 16'b101 ),
+    .back_porch( 16'b10101 ),
+    .negative( 1'b0 ),
     .V( Y_temp ),
     .pulse( Vertical )
   );
@@ -259,7 +259,7 @@ module vga_sync (
   )
   CompUnsigned_i2 (
     .a( X_temp ),
-    .b( 16'b1010000000 ),
+    .b( 16'b10100000000 ),
     .\< ( s1 )
   );
   CompUnsigned #(
@@ -267,7 +267,7 @@ module vga_sync (
   )
   CompUnsigned_i3 (
     .a( Y_temp ),
-    .b( 16'b111100000 ),
+    .b( 16'b1011010000 ),
     .\< ( s2 )
   );
   assign picture = (s1 & s2);
@@ -288,6 +288,25 @@ module vga_Char_position (
   assign row = Y[4:0];
   assign CY = Y[12:5];
 endmodule
+module DIG_Add
+#(
+    parameter Bits = 1
+)
+(
+    input [(Bits-1):0] a,
+    input [(Bits-1):0] b,
+    input c_i,
+    output [(Bits - 1):0] s,
+    output c_o
+);
+   wire [Bits:0] temp;
+
+   assign temp = a + b + c_i;
+   assign s = temp [(Bits-1):0];
+   assign c_o = temp[Bits];
+endmodule
+
+
 module DIG_D_FF_Nbit
 #(
     parameter Bits = 2,
@@ -489,7 +508,7 @@ module vga_text (
     .Default(0)
   )
   DIG_D_FF_Nbit_i4 (
-    .D( background ),
+    .D( foreground ),
     .C( clock ),
     .Q( s8 )
   );
@@ -498,7 +517,7 @@ module vga_text (
     .Default(0)
   )
   DIG_D_FF_Nbit_i5 (
-    .D( foreground ),
+    .D( background ),
     .C( clock ),
     .Q( s7 )
   );
@@ -2645,14 +2664,23 @@ module vga (
   wire [15:0] s4;
   wire [4:0] s5;
   wire [3:0] s6;
-  wire [10:0] s7;
-  wire [15:0] s8;
-  wire [15:0] s9;
-  wire [3:0] s10;
-  wire [3:0] s11;
-  wire [3:0] s12;
-  wire s13;
-  wire s14;
+  wire [7:0] s7;
+  wire [7:0] s8;
+  wire [10:0] s9;
+  wire [15:0] s10;
+  wire [15:0] s11;
+  wire [6:0] s12;
+  wire [11:0] s13;
+  wire [3:0] s14;
+  wire [3:0] s15;
+  wire [3:0] s16;
+  wire s17;
+  wire s18;
+  wire [4:0] s19;
+  wire [6:0] s20;
+  wire [7:0] const8b244;
+  wire [12:0] s21;
+  assign const8b244 = 8'b11110100;
   vga_sync vga_sync_i0 (
     .clock( clock ),
     .Horizontal( s0 ),
@@ -2665,39 +2693,55 @@ module vga (
     .X( s3 ),
     .Y( s4 ),
     .row( s5 ),
-    .column( s6 )
+    .column( s6 ),
+    .CX( s7 ),
+    .CY( s8 )
   );
-  vga_text vga_text_i2 (
+  assign s19 = s8[4:0];
+  assign s20 = s7[6:0];
+  assign s21[4:0] = s19;
+  assign s21[12:5] = const8b244;
+  DIG_Add #(
+    .Bits(7)
+  )
+  DIG_Add_i2 (
+    .a( s20 ),
+    .b( 7'b1000001 ),
+    .c_i( 1'b0 ),
+    .s( s12 )
+  );
+  assign s13 = s21[11:0];
+  vga_text vga_text_i3 (
     .H_input( s0 ),
     .V_input( s1 ),
     .picture( s2 ),
     .row( s5 ),
     .column( s6 ),
     .clock( clock ),
-    .character( 7'b1000001 ),
-    .foreground( 12'b11101010 ),
-    .background( 12'b1100100 ),
-    .Character_Data( s9 ),
-    .R( s10 ),
-    .G( s11 ),
-    .B( s12 ),
-    .H_output( s13 ),
-    .V_output( s14 ),
-    .Character_Address( s7 )
+    .character( s12 ),
+    .foreground( s13 ),
+    .background( 12'b0 ),
+    .Character_Data( s11 ),
+    .R( s14 ),
+    .G( s15 ),
+    .B( s16 ),
+    .H_output( s17 ),
+    .V_output( s18 ),
+    .Character_Address( s9 )
   );
   // Character ROM
-  DIG_ROM_2048X16_CharacterROM DIG_ROM_2048X16_CharacterROM_i3 (
-    .A( s7 ),
+  DIG_ROM_2048X16_CharacterROM DIG_ROM_2048X16_CharacterROM_i4 (
+    .A( s9 ),
     .sel( 1'b1 ),
-    .D( s8 )
+    .D( s10 )
   );
   DIG_D_FF_Nbit #(
     .Bits(16),
     .Default(0)
   )
-  DIG_D_FF_Nbit_i4 (
-    .D( s8 ),
+  DIG_D_FF_Nbit_i5 (
+    .D( s10 ),
     .C( clock ),
-    .Q( s9 )
+    .Q( s11 )
   );
 endmodule
