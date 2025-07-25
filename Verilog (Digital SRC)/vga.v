@@ -107,7 +107,7 @@ module DIG_D_FF_1bit
 endmodule
 
 
-module vga_timing (
+module timing (
   input enable,
   input clock,
   input [15:0] resolution,
@@ -216,7 +216,7 @@ module vga_timing (
   assign next = next_temp;
 endmodule
 
-module vga_sync (
+module sync (
   input clock,
   output Horizontal,
   output Vertical,
@@ -229,8 +229,7 @@ module vga_sync (
   wire [15:0] Y_temp;
   wire s1;
   wire s2;
-  // Horizontal
-  vga_timing vga_timing_i0 (
+  timing timing_i0 (
     .enable( 1'b1 ),
     .clock( clock ),
     .resolution( 16'b10100000000 ),
@@ -240,11 +239,18 @@ module vga_sync (
     .negative( 1'b0 ),
     .V( X_temp ),
     .pulse( Horizontal ),
-    .next( s0 )
+    .next( s2 )
   );
-  // Vertical
-  vga_timing vga_timing_i1 (
-    .enable( s0 ),
+  CompUnsigned #(
+    .Bits(16)
+  )
+  CompUnsigned_i1 (
+    .a( X_temp ),
+    .b( 16'b10100000000 ),
+    .\< ( s0 )
+  );
+  timing timing_i2 (
+    .enable( s2 ),
     .clock( clock ),
     .resolution( 16'b1011010000 ),
     .front_porch( 16'b101 ),
@@ -257,25 +263,17 @@ module vga_sync (
   CompUnsigned #(
     .Bits(16)
   )
-  CompUnsigned_i2 (
-    .a( X_temp ),
-    .b( 16'b10100000000 ),
-    .\< ( s1 )
-  );
-  CompUnsigned #(
-    .Bits(16)
-  )
   CompUnsigned_i3 (
     .a( Y_temp ),
     .b( 16'b1011010000 ),
-    .\< ( s2 )
+    .\< ( s1 )
   );
-  assign picture = (s1 & s2);
+  assign picture = (s0 & s1);
   assign X = X_temp;
   assign Y = Y_temp;
 endmodule
 
-module vga_Char_position (
+module character_position (
   input [15:0] X,
   input [15:0] Y,
   output [4:0] row,
@@ -288,25 +286,186 @@ module vga_Char_position (
   assign row = Y[4:0];
   assign CY = Y[12:5];
 endmodule
-module DIG_Add
-#(
-    parameter Bits = 1
+
+module Mux_16x1_NBits #(
+    parameter Bits = 2
 )
 (
-    input [(Bits-1):0] a,
-    input [(Bits-1):0] b,
-    input c_i,
-    output [(Bits - 1):0] s,
-    output c_o
+    input [3:0] sel,
+    input [(Bits - 1):0] in_0,
+    input [(Bits - 1):0] in_1,
+    input [(Bits - 1):0] in_2,
+    input [(Bits - 1):0] in_3,
+    input [(Bits - 1):0] in_4,
+    input [(Bits - 1):0] in_5,
+    input [(Bits - 1):0] in_6,
+    input [(Bits - 1):0] in_7,
+    input [(Bits - 1):0] in_8,
+    input [(Bits - 1):0] in_9,
+    input [(Bits - 1):0] in_10,
+    input [(Bits - 1):0] in_11,
+    input [(Bits - 1):0] in_12,
+    input [(Bits - 1):0] in_13,
+    input [(Bits - 1):0] in_14,
+    input [(Bits - 1):0] in_15,
+    output reg [(Bits - 1):0] out
 );
-   wire [Bits:0] temp;
-
-   assign temp = a + b + c_i;
-   assign s = temp [(Bits-1):0];
-   assign c_o = temp[Bits];
+    always @ (*) begin
+        case (sel)
+            4'h0: out = in_0;
+            4'h1: out = in_1;
+            4'h2: out = in_2;
+            4'h3: out = in_3;
+            4'h4: out = in_4;
+            4'h5: out = in_5;
+            4'h6: out = in_6;
+            4'h7: out = in_7;
+            4'h8: out = in_8;
+            4'h9: out = in_9;
+            4'ha: out = in_10;
+            4'hb: out = in_11;
+            4'hc: out = in_12;
+            4'hd: out = in_13;
+            4'he: out = in_14;
+            4'hf: out = in_15;
+            default:
+                out = 'h0;
+        endcase
+    end
 endmodule
 
 
+module Mux_2x1_NBits #(
+    parameter Bits = 2
+)
+(
+    input [0:0] sel,
+    input [(Bits - 1):0] in_0,
+    input [(Bits - 1):0] in_1,
+    output reg [(Bits - 1):0] out
+);
+    always @ (*) begin
+        case (sel)
+            1'h0: out = in_0;
+            1'h1: out = in_1;
+            default:
+                out = 'h0;
+        endcase
+    end
+endmodule
+
+
+module strings (
+  input [7:0] CX,
+  input [7:0] CY,
+  input [11:0] foreground,
+  input [11:0] background,
+  input [6:0] character,
+  input [11:0] \foreground_(colour) ,
+  input [11:0] \background_(colour) ,
+  input [3:0] \CX_(colour) ,
+  input [7:0] \CY(colour) ,
+  input [6:0] Character_0,
+  input [6:0] Character_1,
+  input [6:0] Character_2,
+  input [6:0] Character_3,
+  input [6:0] Character_4,
+  input [6:0] Character_5,
+  input [6:0] Character_6,
+  input [6:0] Character_7,
+  input [6:0] Character_8,
+  input [6:0] Character_9,
+  input [6:0] Character_10,
+  input [6:0] Character_11,
+  input [6:0] Character_12,
+  input [6:0] Character_13,
+  input [6:0] Character_14,
+  input [6:0] Character_15,
+  input enable,
+  output [6:0] character_o,
+  output [11:0] foreground_o,
+  output [11:0] background_o,
+  output [7:0] CX_o,
+  output [7:0] CY_o
+);
+  wire s0;
+  wire [6:0] s1;
+  wire [3:0] s2;
+  wire s3;
+  wire s4;
+  wire [3:0] s5;
+  CompUnsigned #(
+    .Bits(8)
+  )
+  CompUnsigned_i0 (
+    .a( CY ),
+    .b( \CY(colour)  ),
+    .\> ( s4 )
+  );
+  assign s5 = CX[3:0];
+  assign s2 = CX[7:4];
+  CompUnsigned #(
+    .Bits(4)
+  )
+  CompUnsigned_i1 (
+    .a( s2 ),
+    .b( \CX_(colour)  ),
+    .\= ( s3 )
+  );
+  Mux_16x1_NBits #(
+    .Bits(7)
+  )
+  Mux_16x1_NBits_i2 (
+    .sel( s5 ),
+    .in_0( Character_0 ),
+    .in_1( Character_1 ),
+    .in_2( Character_2 ),
+    .in_3( Character_3 ),
+    .in_4( Character_4 ),
+    .in_5( Character_5 ),
+    .in_6( Character_6 ),
+    .in_7( Character_7 ),
+    .in_8( Character_8 ),
+    .in_9( Character_9 ),
+    .in_10( Character_10 ),
+    .in_11( Character_11 ),
+    .in_12( Character_12 ),
+    .in_13( Character_13 ),
+    .in_14( Character_14 ),
+    .in_15( Character_15 ),
+    .out( s1 )
+  );
+  assign s0 = (s3 & enable & s4);
+  Mux_2x1_NBits #(
+    .Bits(7)
+  )
+  Mux_2x1_NBits_i3 (
+    .sel( s0 ),
+    .in_0( character ),
+    .in_1( s1 ),
+    .out( character_o )
+  );
+  Mux_2x1_NBits #(
+    .Bits(12)
+  )
+  Mux_2x1_NBits_i4 (
+    .sel( s0 ),
+    .in_0( foreground ),
+    .in_1( \foreground_(colour)  ),
+    .out( foreground_o )
+  );
+  Mux_2x1_NBits #(
+    .Bits(12)
+  )
+  Mux_2x1_NBits_i5 (
+    .sel( s0 ),
+    .in_0( background ),
+    .in_1( \background_(colour)  ),
+    .out( background_o )
+  );
+  assign CX_o = CX;
+  assign CY_o = CY;
+endmodule
 module DIG_D_FF_Nbit
 #(
     parameter Bits = 2,
@@ -379,26 +538,6 @@ module Mux_16x1
 endmodule
 
 
-module Mux_2x1_NBits #(
-    parameter Bits = 2
-)
-(
-    input [0:0] sel,
-    input [(Bits - 1):0] in_0,
-    input [(Bits - 1):0] in_1,
-    output reg [(Bits - 1):0] out
-);
-    always @ (*) begin
-        case (sel)
-            1'h0: out = in_0;
-            1'h1: out = in_1;
-            default:
-                out = 'h0;
-        endcase
-    end
-endmodule
-
-
 module Mux_4x1_NBits #(
     parameter Bits = 2
 )
@@ -423,7 +562,7 @@ module Mux_4x1_NBits #(
 endmodule
 
 
-module vga_text (
+module text (
   input H_input,
   input V_input,
   input picture,
@@ -593,6 +732,96 @@ module vga_text (
   assign B = s9[3:0];
   assign G = s9[7:4];
   assign R = s9[11:8];
+endmodule
+
+module display (
+  input clock,
+  input enable,
+  input [15:0] Character_Data,
+  output [3:0] R,
+  output [3:0] G,
+  output [3:0] B,
+  output H_output,
+  output V_output,
+  output [10:0] Character_Address
+);
+  wire [15:0] s0;
+  wire [15:0] s1;
+  wire [4:0] s2;
+  wire [3:0] s3;
+  wire [7:0] s4;
+  wire [7:0] s5;
+  wire [6:0] s6;
+  wire [11:0] s7;
+  wire [11:0] s8;
+  wire s9;
+  wire s10;
+  wire s11;
+  sync sync_i0 (
+    .clock( clock ),
+    .Horizontal( s9 ),
+    .Vertical( s10 ),
+    .picture( s11 ),
+    .X( s0 ),
+    .Y( s1 )
+  );
+  character_position character_position_i1 (
+    .X( s0 ),
+    .Y( s1 ),
+    .row( s2 ),
+    .column( s3 ),
+    .CX( s4 ),
+    .CY( s5 )
+  );
+  strings strings_i2 (
+    .CX( s4 ),
+    .CY( s5 ),
+    .foreground( 12'b10011110 ),
+    .background( 12'b1 ),
+    .character( 7'b0 ),
+    .\foreground_(colour) ( 12'b1111000001 ),
+    .\background_(colour) ( 12'b1 ),
+    .\CX_(colour) ( 4'b10 ),
+    .\CY(colour) ( 8'b0 ),
+    .Character_0( 7'b111000 ),
+    .Character_1( 7'b101101 ),
+    .Character_2( 7'b1000010 ),
+    .Character_3( 7'b1010101 ),
+    .Character_4( 7'b1010100 ),
+    .Character_5( 7'b100000 ),
+    .Character_6( 7'b1001101 ),
+    .Character_7( 7'b1001001 ),
+    .Character_8( 7'b1000111 ),
+    .Character_9( 7'b1001000 ),
+    .Character_10( 7'b1010100 ),
+    .Character_11( 7'b1011001 ),
+    .Character_12( 7'b100000 ),
+    .Character_13( 7'b1010110 ),
+    .Character_14( 7'b1000111 ),
+    .Character_15( 7'b1000001 ),
+    .enable( enable ),
+    .character_o( s6 ),
+    .foreground_o( s7 ),
+    .background_o( s8 )
+  );
+  text text_i3 (
+    .H_input( s9 ),
+    .V_input( s10 ),
+    .picture( s11 ),
+    .row( s2 ),
+    .column( s3 ),
+    .clock( clock ),
+    .character( s6 ),
+    .foreground( s7 ),
+    .background( s8 ),
+    .Character_Data( Character_Data ),
+    .R( R ),
+    .G( G ),
+    .B( B ),
+    .H_output( H_output ),
+    .V_output( V_output ),
+    .Character_Address( Character_Address )
+  );
 endmodule
 module DIG_ROM_2048X16_CharacterROM (
     input [10:0] A,
@@ -2655,93 +2884,41 @@ endmodule
 
 
 module vga (
-  input clock
+  input clock,
+  input ONnotOFF
 );
-  wire s0;
-  wire s1;
-  wire s2;
-  wire [15:0] s3;
-  wire [15:0] s4;
-  wire [4:0] s5;
-  wire [3:0] s6;
-  wire [7:0] s7;
-  wire [7:0] s8;
-  wire [10:0] s9;
-  wire [15:0] s10;
-  wire [15:0] s11;
-  wire [6:0] s12;
-  wire [11:0] s13;
-  wire [3:0] s14;
-  wire [3:0] s15;
-  wire [3:0] s16;
-  wire s17;
-  wire s18;
-  wire [4:0] s19;
-  wire [6:0] s20;
-  wire [7:0] const8b244;
-  wire [12:0] s21;
-  assign const8b244 = 8'b11110100;
-  vga_sync vga_sync_i0 (
+  wire [10:0] s0;
+  wire [15:0] s1;
+  wire [15:0] s2;
+  wire [3:0] s3;
+  wire [3:0] s4;
+  wire [3:0] s5;
+  wire s6;
+  wire s7;
+  display display_i0 (
     .clock( clock ),
-    .Horizontal( s0 ),
-    .Vertical( s1 ),
-    .picture( s2 ),
-    .X( s3 ),
-    .Y( s4 )
-  );
-  vga_Char_position vga_Char_position_i1 (
-    .X( s3 ),
-    .Y( s4 ),
-    .row( s5 ),
-    .column( s6 ),
-    .CX( s7 ),
-    .CY( s8 )
-  );
-  assign s19 = s8[4:0];
-  assign s20 = s7[6:0];
-  assign s21[4:0] = s19;
-  assign s21[12:5] = const8b244;
-  DIG_Add #(
-    .Bits(7)
-  )
-  DIG_Add_i2 (
-    .a( s20 ),
-    .b( 7'b1000001 ),
-    .c_i( 1'b0 ),
-    .s( s12 )
-  );
-  assign s13 = s21[11:0];
-  vga_text vga_text_i3 (
-    .H_input( s0 ),
-    .V_input( s1 ),
-    .picture( s2 ),
-    .row( s5 ),
-    .column( s6 ),
-    .clock( clock ),
-    .character( s12 ),
-    .foreground( s13 ),
-    .background( 12'b0 ),
-    .Character_Data( s11 ),
-    .R( s14 ),
-    .G( s15 ),
-    .B( s16 ),
-    .H_output( s17 ),
-    .V_output( s18 ),
-    .Character_Address( s9 )
+    .enable( ONnotOFF ),
+    .Character_Data( s2 ),
+    .R( s3 ),
+    .G( s4 ),
+    .B( s5 ),
+    .H_output( s6 ),
+    .V_output( s7 ),
+    .Character_Address( s0 )
   );
   // Character ROM
-  DIG_ROM_2048X16_CharacterROM DIG_ROM_2048X16_CharacterROM_i4 (
-    .A( s9 ),
+  DIG_ROM_2048X16_CharacterROM DIG_ROM_2048X16_CharacterROM_i1 (
+    .A( s0 ),
     .sel( 1'b1 ),
-    .D( s10 )
+    .D( s1 )
   );
   DIG_D_FF_Nbit #(
     .Bits(16),
     .Default(0)
   )
-  DIG_D_FF_Nbit_i5 (
-    .D( s10 ),
+  DIG_D_FF_Nbit_i2 (
+    .D( s1 ),
     .C( clock ),
-    .Q( s11 )
+    .Q( s2 )
   );
 endmodule
