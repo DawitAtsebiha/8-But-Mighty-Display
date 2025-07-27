@@ -77,6 +77,7 @@ module strings (
   input [6:0] Character_1,
   input [6:0] Character_2,
   input [6:0] Character_3,
+  input [7:0] cutoff,
   input enable,
   output [7:0] CX_o,
   output [7:0] CY_o,
@@ -97,14 +98,14 @@ module strings (
   CompUnsigned_i0 (
     .a( CY ),
     .b( \CY(colour)  ),
-    .\> ( s4 )
+    .\= ( s4 )
   );
   CompUnsigned #(
     .Bits(8)
   )
   CompUnsigned_i1 (
-    .a( CY ),
-    .b( 8'b1010 ),
+    .a( cutoff ),
+    .b( CY ),
     .\= ( s5 )
   );
   assign s6 = CX[1:0];
